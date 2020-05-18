@@ -1,31 +1,48 @@
-const btn = document.querySelector('.btn').addEventListener('click', getData);
+// UI Variables
+const fetchBtn = document.querySelector('.btn');
+const countryName = document.getElementById('countryName');
+const result = document.querySelector('.output');
 
-async function getData() {
+// Event Listener
+fetchBtn.addEventListener('click', fetchData);
 
-  const name = document.querySelector('input').value;
-  try {
-    var response = await fetch(`https://restcountries.eu/rest/v2/name/${name}`);
-    const data = await response.json();
+// Fetch Data
+async function fetchData() {
 
-    let output = '';
+  // Fetch from external API
+  const response = await fetch(`https://restcountries.eu/rest/v2/name/${countryName.value}`);
 
-    data.forEach(info => {
+  // Convert to JSON
+  const data = await response.json();
 
-      output += `<ul class="list-group ul mt-3">
-  
-        <li class="list-group-item">Country: ${info.name}</li>
-        <li class="list-group-item">Capital: ${info.capital}</li>
-        <li class="list-group-item">Population: ${info.population}</li>
-        <li class="list-group-item">TimeZone: ${info.timezones}</li>
-      </ul>`
+  let output = '';
+
+  // Iterate over country details
+  data.forEach(country => {
+    output += `
+    <ul class="list-group ul mt-3">
+      <li class="list-group-item">Name: ${country.name}</li>
+      <li class="list-group-item">Capital: ${country.capital}</li>
+      <li class="list-group-item">Population: ${country.population}</li>
+      <li class="list-group-item">TimeZone: ${country.timezones}</li>
+    </ul>
+    `;
+
+    let languages = '';
+
+    // Iterate over languages
+    country.languages.forEach(language => {
+      if (country.languages.length >= 1) {
+        languages += `${language.name}. `
+      } else {
+        languages = language.name
+      }
     })
 
-    document.querySelector('.output').innerHTML = output;
+    // Append the languages
+    output += `<li class="list-group-item">Language: ${languages}</li>`
+  })
 
-  } catch (e) {
-    console.log('Error: Failed to fetch the data');
-  }
-
-
-
+  // Display the result
+  result.innerHTML = output;
 }
