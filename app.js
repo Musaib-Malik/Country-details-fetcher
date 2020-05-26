@@ -1,45 +1,46 @@
 // UI Variables
-const form = document.querySelector('.form');
-const countryName = document.getElementById('countryName');
-const result = document.querySelector('.output');
-const submitBtn = document.querySelector('#submitBtn');
-const spinner = document.querySelector('#spinner');
+const form = document.querySelector(".form");
+const countryName = document.getElementById("countryName");
+const result = document.querySelector(".output");
+const submitBtn = document.querySelector("#submitBtn");
+const spinner = document.querySelector("#spinner");
 
 // Event Listener
-form.addEventListener('submit', fetchData);
-form.addEventListener('submit', clearValue);
+form.addEventListener("submit", fetchData);
+form.addEventListener("submit", clearValue);
 
 // Fetch Data
 async function fetchData(e) {
   e.preventDefault();
 
   // Fetch / Reset Event
-  if (submitBtn.value === 'Reset') {
+  if (submitBtn.value === "Reset") {
     window.location.reload();
   } else {
-
     // Form Validation
-    if (countryName.value === '') {
+    if (countryName.value === "") {
       showAlert("Please Fill in the field!");
     } else {
-      showSpinner()
+      showSpinner();
       // Fetch from external API
-      const response = await fetch(`https://restcountries.eu/rest/v2/name/${countryName.value}`).catch(err => {
+      const response = await fetch(
+        `https://restcountries.eu/rest/v2/name/${countryName.value}`
+      ).catch((err) => {
         hideSpinner();
-        showAlert('Please check your internet connection.')
-      })
+        showAlert("Please check your internet connection.");
+      });
 
       // Convert to JSON
       if (response.ok) {
-        submitBtn.value = 'Reset';
+        submitBtn.value = "Reset";
 
         hideSpinner();
         const data = await response.json();
 
-        let output = '';
+        let output = "";
 
         // Iterate over country details
-        data.forEach(country => {
+        data.forEach((country) => {
           output += `
         <ul class="list-group ul mt-3">
           <li class="list-group-item">Name: ${country.name}</li>
@@ -52,32 +53,35 @@ async function fetchData(e) {
           let languages = ``;
 
           // Iterate over languages
-          country.languages.forEach(language => {
-            if (country.languages.length - 1 === country.languages.indexOf(language)) {
-              languages += `${language.name}.`
+          country.languages.forEach((language) => {
+            if (
+              country.languages.length - 1 ===
+              country.languages.indexOf(language)
+            ) {
+              languages += `${language.name}.`;
             } else {
-              languages += `${language.name}, `
+              languages += `${language.name}, `;
             }
-          })
+          });
 
           // Append the languages
-          output += `<li class="list-group-item">Language: ${languages}</li>`
-        })
+          output += `<li class="list-group-item">Language: ${languages}</li>`;
+        });
 
         // Display the result
         result.innerHTML = output;
       } else {
         spinnerTimeout();
         showAlert("Please check the country name!");
-        countryName.value = '';
+        countryName.value = "";
       }
     }
   }
 }
 
-// Clear Value 
+// Clear Value
 function clearValue() {
-  countryName.value = '';
+  countryName.value = "";
 }
 
 // Alert Function
@@ -88,37 +92,34 @@ function showAlert(message) {
 
   errorDiv.appendChild(document.createTextNode(message));
 
-  const container = document.querySelector('.content');
+  const container = document.querySelector(".content");
 
   const headerTitle = document.querySelector("#header-title");
 
-  headerTitle.insertAdjacentElement('afterend', errorDiv);
+  headerTitle.insertAdjacentElement("afterend", errorDiv);
 
   setTimeout(() => {
     document.querySelector(".alert").remove();
   }, 2500);
 }
 
-
 // Show Spinner
 function showSpinner() {
-  spinner.style.display = 'block';
-
+  spinner.style.display = "block";
 }
 
 // Hide Spinner
 function hideSpinner() {
-  spinner.style.display = 'none';
-
+  spinner.style.display = "none";
 }
 
 // Spinner Timeout (In case of error while fetching)
 function spinnerTimeout() {
   setTimeout(() => {
-    spinner.style.display = 'none';
-  }, 1000)
+    spinner.style.display = "none";
+  }, 1000);
 
   setInterval(() => {
-    document.querySelector('.alert-danger')
-  }, 1000)
+    document.querySelector(".alert-danger");
+  }, 1000);
 }
