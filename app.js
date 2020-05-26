@@ -1,13 +1,16 @@
 // UI Variables
-const fetchBtn = document.querySelector('.btn');
+const form = document.querySelector('.form');
 const countryName = document.getElementById('countryName');
 const result = document.querySelector('.output');
 
 // Event Listener
-fetchBtn.addEventListener('click', fetchData);
+form.addEventListener('submit', fetchData);
+form.addEventListener('submit', clearValue);
 
 // Fetch Data
-async function fetchData() {
+async function fetchData(e) {
+
+  e.preventDefault();
 
   // Fetch from external API
   const response = await fetch(`https://restcountries.eu/rest/v2/name/${countryName.value}`);
@@ -28,14 +31,14 @@ async function fetchData() {
     </ul>
     `;
 
-    let languages = '';
+    let languages = ``;
 
     // Iterate over languages
     country.languages.forEach(language => {
-      if (country.languages.length >= 1) {
-        languages += `${language.name}. `
+      if (country.languages.length - 1 === country.languages.indexOf(language)) {
+        languages += `${language.name}.`
       } else {
-        languages = language.name
+        languages += `${language.name}, `
       }
     })
 
@@ -45,4 +48,9 @@ async function fetchData() {
 
   // Display the result
   result.innerHTML = output;
+  
+}
+
+function clearValue() {
+  countryName.value = '';
 }
